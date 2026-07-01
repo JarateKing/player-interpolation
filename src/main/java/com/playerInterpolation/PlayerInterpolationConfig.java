@@ -8,12 +8,12 @@ import net.runelite.client.config.*;
 public interface PlayerInterpolationConfig extends Config
 {
 	@ConfigSection(
-			name = "Panel",
-			description = "Panel Settings",
+			name = "Interpolation",
+			description = "Interpolation Settings",
 			position = 0,
 			closedByDefault = false
 	)
-	String panelSection = "Panel";
+	String panelSection = "Interpolation";
 
 	@ConfigItem(
 			keyName = "duration",
