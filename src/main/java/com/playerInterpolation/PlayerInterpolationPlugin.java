@@ -12,11 +12,15 @@ import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.api.Player;
 import net.runelite.api.*;
-import net.runelite.api.Renderable;
+import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
+
+import java.awt.*;
 
 @Slf4j
 @PluginDescriptor(
@@ -33,18 +37,29 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	@Inject
 	private RenderCallbackManager renderCallbackManager;
 
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject private ModelOutlineRenderer modelOutlineRenderer;
+
+	private PlayerInterpolationOverlay playerInterpolationOverlay;
+
 	private LocalPoint previousTrueTile = null;
 	private LocalPoint currentTrueTile = null;
 
 	@Override
 	protected void startUp() throws Exception
 	{
+		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, this, config, modelOutlineRenderer);
+		overlayManager.add(playerInterpolationOverlay);
+
 		renderCallbackManager.register(this);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
+		overlayManager.remove(playerInterpolationOverlay);
 		renderCallbackManager.unregister(this);
 	}
 
@@ -53,6 +68,8 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	{
 		previousTrueTile = currentTrueTile;
 		currentTrueTile = getTrueTile();
+
+		playerInterpolationOverlay.onTick();
 	}
 
 	@Subscribe
@@ -89,7 +106,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		return LocalPoint.fromWorld(client.getLocalPlayer().getWorldView(), worldPoint);
 	}
 
-	private boolean isMoving()
+	public boolean isMoving()
 	{
 		if (previousTrueTile == null && currentTrueTile == null)
 			return false;
@@ -98,6 +115,27 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 			return true;
 
 		return previousTrueTile.getX() != currentTrueTile.getX() || previousTrueTile.getY() != currentTrueTile.getY();
+	}
+
+	public LocalPoint getPosition(float percent)
+	{
+		if (previousTrueTile == null)
+		{
+			return currentTrueTile;
+		}
+
+		int dx = currentTrueTile.getX() - previousTrueTile.getX();
+		int dy = currentTrueTile.getY() - previousTrueTile.getY();
+
+		float x = lerp(0, dx, percent);
+		float y = lerp(0, dy, percent);
+
+		return previousTrueTile.plus(Math.round(x), Math.round(y));
+	}
+
+	private float lerp(float a, float b, float t)
+	{
+		return a * (t - 1) + b * t;
 	}
 
 	@Provides
