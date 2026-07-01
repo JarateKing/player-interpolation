@@ -106,7 +106,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		return LocalPoint.fromWorld(client.getLocalPlayer().getWorldView(), worldPoint);
 	}
 
-	public boolean isMoving()
+	public boolean isTileChanged()
 	{
 		if (previousTrueTile == null && currentTrueTile == null)
 			return false;
@@ -117,6 +117,16 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		return previousTrueTile.getX() != currentTrueTile.getX() || previousTrueTile.getY() != currentTrueTile.getY();
 	}
 
+	public boolean isMoving()
+	{
+		if (currentTrueTile == null)
+			return false;
+
+		LocalPoint visualTile = client.getLocalPlayer().getLocalLocation();
+
+		return visualTile.getX() != currentTrueTile.getX() || visualTile.getY() != currentTrueTile.getY();
+	}
+
 	public LocalPoint getPosition(float percent)
 	{
 		if (previousTrueTile == null)
@@ -124,11 +134,13 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 			return currentTrueTile;
 		}
 
+		float t = clamp(percent, 0, 1);
+
 		int dx = currentTrueTile.getX() - previousTrueTile.getX();
 		int dy = currentTrueTile.getY() - previousTrueTile.getY();
 
-		float x = lerp(0, dx, percent);
-		float y = lerp(0, dy, percent);
+		float x = lerp(0, dx, t);
+		float y = lerp(0, dy, t);
 
 		return previousTrueTile.plus(Math.round(x), Math.round(y));
 	}
@@ -136,6 +148,15 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	private float lerp(float a, float b, float t)
 	{
 		return a * (t - 1) + b * t;
+	}
+
+	private float clamp(float v, float l, float h)
+	{
+		if (v > h)
+			return h;
+		if (v < l)
+			return l;
+		return v;
 	}
 
 	@Provides

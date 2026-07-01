@@ -38,8 +38,6 @@ class PlayerInterpolationOverlay extends Overlay
         updateDelta();
         progress += delta * (1000f / config.durationMS());
 
-        System.out.println(progress);
-
         if (plugin.isMoving())
         {
             Player actor = client.getLocalPlayer();
