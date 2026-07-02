@@ -8,6 +8,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
@@ -32,6 +33,9 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	private Client client;
 
 	@Inject
+	private ClientThread clientThread;
+
+	@Inject
 	private PlayerInterpolationConfig config;
 
 	@Inject
@@ -45,23 +49,29 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 
 	private PlayerInterpolationOverlay playerInterpolationOverlay;
 
-	private LocalPoint previousTrueTile = null;
-	private LocalPoint currentTrueTile = null;
-	private boolean isDefaultVisible = true;
-	private int previousRotation = 0;
+	private LocalPoint previousTrueTile;
+	private LocalPoint currentTrueTile;
+	private boolean isDefaultVisible;
+	private int previousRotation;
 
 	@Override
 	protected void startUp() throws Exception
 	{
-		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, this, config, outlineRenderer);
+		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, clientThread, this, config, outlineRenderer);
 		overlayManager.add(playerInterpolationOverlay);
 
 		renderCallbackManager.register(this);
+
+		previousTrueTile = null;
+		currentTrueTile = null;
+		isDefaultVisible = true;
+		previousRotation = 0;
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
+		playerInterpolationOverlay.shutdown();
 		overlayManager.remove(playerInterpolationOverlay);
 		renderCallbackManager.unregister(this);
 	}

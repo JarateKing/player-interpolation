@@ -5,6 +5,7 @@ import net.runelite.api.Model;
 import net.runelite.api.Player;
 import net.runelite.api.RuneLiteObject;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.ui.overlay.Overlay;
 import java.awt.*;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
@@ -12,6 +13,7 @@ import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 class PlayerInterpolationOverlay extends Overlay
 {
     private Client client;
+    private ClientThread clientThread;
     private PlayerInterpolationPlugin plugin;
     private PlayerInterpolationConfig config;
     private ModelOutlineRenderer outlineRenderer;
@@ -23,9 +25,10 @@ class PlayerInterpolationOverlay extends Overlay
     private float posProgress;
     private float rotProgress;
 
-    PlayerInterpolationOverlay(Client client, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config, ModelOutlineRenderer outlineRenderer)
+    PlayerInterpolationOverlay(Client client, ClientThread clientThread, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config, ModelOutlineRenderer outlineRenderer)
     {
         this.client = client;
+        this.clientThread = clientThread;
         this.plugin = plugin;
         this.config = config;
         this.outlineRenderer = outlineRenderer;
@@ -92,6 +95,15 @@ class PlayerInterpolationOverlay extends Overlay
     {
         posProgress = 0;
         rotProgress = 0;
+    }
+
+    public void shutdown()
+    {
+        clientThread.invoke(() ->
+        {
+            playerModel.setActive(false);
+            plugin.setPlayerVisibility(true);
+        });
     }
 
     public int getRotation()
