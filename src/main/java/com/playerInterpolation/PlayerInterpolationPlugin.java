@@ -45,6 +45,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	private LocalPoint previousTrueTile = null;
 	private LocalPoint currentTrueTile = null;
 	private boolean isDefaultVisible = true;
+	private int previousRotation = 0;
 
 	@Override
 	protected void startUp() throws Exception
@@ -67,6 +68,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	{
 		previousTrueTile = currentTrueTile;
 		currentTrueTile = getTrueTile();
+		previousRotation = playerInterpolationOverlay.getRotation();
 
 		playerInterpolationOverlay.onTick();
 	}
@@ -153,9 +155,58 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		return previousTrueTile.plus(Math.round(x), Math.round(y));
 	}
 
+	public int getRotation(float percent)
+	{
+		if (previousTrueTile == null)
+		{
+			return 0;
+		}
+
+		float t = clamp(percent, 0, 1);
+
+		int dx = currentTrueTile.getX() - previousTrueTile.getX();
+		int dy = currentTrueTile.getY() - previousTrueTile.getY();
+
+		int targetRotation = 0;
+
+		if (dx == 0 && dy < 0)
+			targetRotation = 0;
+		if (dx < 0 && dy < 0)
+			targetRotation = 256;
+		if (dx < 0 && dy == 0)
+			targetRotation = 512;
+		if (dx < 0 && dy > 0)
+			targetRotation = 768;
+		if (dx == 0 && dy > 0)
+			targetRotation = 1024;
+		if (dx > 0 && dy > 0)
+			targetRotation = 1280;
+		if (dx > 0 && dy == 0)
+			targetRotation = 1536;
+		if (dx > 0 && dy < 0)
+			targetRotation = 1792;
+
+		int start = previousRotation;
+		int end = targetRotation;
+		int diff = Math.abs(end - start);
+		if (diff > 1024)
+		{
+			if (end > start)
+			{
+				start += 2048;
+			}
+			else
+			{
+				end += 2048;
+			}
+		}
+		float ans = lerp(start, end, t);
+		return Math.round(ans) % 2048;
+	}
+
 	private float lerp(float a, float b, float t)
 	{
-		return a * (t - 1) + b * t;
+		return a * (1 - t) + b * t;
 	}
 
 	private float clamp(float v, float l, float h)

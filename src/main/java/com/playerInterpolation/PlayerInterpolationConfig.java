@@ -25,4 +25,12 @@ public interface PlayerInterpolationConfig extends Config
 	{
 		return 600;
 	}
+
+	@ConfigItem(
+			keyName = "rotationTime",
+			name = "Rotation Time",
+			description = "How long (in milliseconds) it should take to rotate",
+			section = panelSection
+	)
+	default int rotationMS() { return 200; }
 }

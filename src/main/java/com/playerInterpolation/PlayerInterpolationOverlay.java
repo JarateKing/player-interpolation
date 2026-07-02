@@ -20,7 +20,8 @@ class PlayerInterpolationOverlay extends Overlay
 
     private long lastnano;
     private float delta;
-    private float progress;
+    private float posProgress;
+    private float rotProgress;
 
     PlayerInterpolationOverlay(Client client, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config)
     {
@@ -30,14 +31,16 @@ class PlayerInterpolationOverlay extends Overlay
 
         lastnano = System.nanoTime();
         delta = 0;
-        progress = 0;
+        posProgress = 0;
+        rotProgress = 0;
     }
 
     @Override
     public Dimension render(Graphics2D graphics)
     {
         updateDelta();
-        progress += delta * (1000f / config.durationMS());
+        posProgress += delta * (1000f / config.durationMS());
+        rotProgress += delta * (1000f / config.rotationMS());
 
         if (plugin.isMoving())
         {
@@ -47,13 +50,14 @@ class PlayerInterpolationOverlay extends Overlay
             }
 
             Player actor = client.getLocalPlayer();
-            LocalPoint pos = plugin.getPosition(progress);
+            LocalPoint pos = plugin.getPosition(posProgress);
+            int rot = plugin.getRotation(rotProgress);
 
             Model model = client.mergeModels(client.getLocalPlayer().getModel());
             playerModel.setModel(model);
 
             playerModel.setLocation(pos, actor.getWorldView().getPlane());
-            playerModel.setOrientation(actor.getCurrentOrientation());
+            playerModel.setOrientation(rot);
 
             if (!playerModel.isActive())
             {
@@ -75,7 +79,14 @@ class PlayerInterpolationOverlay extends Overlay
 
     public void onTick()
     {
-        progress = 0;
+        posProgress = 0;
+        rotProgress = 0;
+    }
+
+    public int getRotation()
+    {
+        System.out.println("Getting: " + playerModel.getOrientation());
+        return playerModel.getOrientation();
     }
 
     private void updateDelta()
