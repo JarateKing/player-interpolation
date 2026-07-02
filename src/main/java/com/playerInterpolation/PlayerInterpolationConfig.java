@@ -18,7 +18,7 @@ public interface PlayerInterpolationConfig extends Config
 	@ConfigSection(
 			name = "Outline",
 			description = "Outline Settings",
-			position = 2,
+			position = 1,
 			closedByDefault = false
 	)
 	String outlineSection = "Outline";
@@ -40,13 +40,14 @@ public interface PlayerInterpolationConfig extends Config
 			description = "How long (in milliseconds) it should take to rotate",
 			section = interpolationSection
 	)
-	default int rotationMS() { return 200; }
+	default int rotationMS() { return 600; }
 
 	@ConfigItem(
 			keyName = "useOutline",
 			name = "Use Outline",
 			description = "Instead of moving the player model, keep the original position and show an interpolated outline",
-			section = outlineSection
+			section = outlineSection,
+			position = 0
 	)
 	default boolean useOutline() { return false; }
 
@@ -55,7 +56,8 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "outlineColour",
 			name = "Outline Color",
 			description = "Color of the outline",
-			section = outlineSection
+			section = outlineSection,
+			position = 1
 	)
 	default Color outlineColour()
 	{
@@ -66,7 +68,8 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "outlineWidth",
 			name = "Outline Width",
 			description = "How wide (in pixels) should the outline be",
-			section = outlineSection
+			section = outlineSection,
+			position = 2
 	)
 	default int outlineWidth() { return 2; }
 
@@ -74,7 +77,8 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "outlineFeather",
 			name = "Outline Feather",
 			description = "How much fade should the outline have",
-			section = outlineSection
+			section = outlineSection,
+			position = 3
 	)
-	default int outlineFeather() { return 2; }
+	default int outlineFeather() { return 0; }
 }
