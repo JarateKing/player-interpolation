@@ -40,8 +40,6 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	@Inject
 	private OverlayManager overlayManager;
 
-	@Inject private ModelOutlineRenderer modelOutlineRenderer;
-
 	private PlayerInterpolationOverlay playerInterpolationOverlay;
 
 	private LocalPoint previousTrueTile = null;
@@ -50,7 +48,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	@Override
 	protected void startUp() throws Exception
 	{
-		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, this, config, modelOutlineRenderer);
+		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, this, config);
 		overlayManager.add(playerInterpolationOverlay);
 
 		renderCallbackManager.register(this);
@@ -88,6 +86,9 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		// hide the local player, if the player is moving
 		Player localPlayer = client.getLocalPlayer();
 
+		if (localPlayer == null)
+			return true;
+
 		if (object.getId() != localPlayer.getId())
 			return true;
 
@@ -96,12 +97,13 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 
 	private LocalPoint getTrueTile()
 	{
+		if (client.getLocalPlayer() == null)
+			return null;
+
 		WorldPoint worldPoint = client.getLocalPlayer().getWorldLocation();
 
 		if (worldPoint == null)
-		{
 			return null;
-		}
 
 		return LocalPoint.fromWorld(client.getLocalPlayer().getWorldView(), worldPoint);
 	}

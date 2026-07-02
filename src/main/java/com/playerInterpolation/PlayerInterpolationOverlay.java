@@ -1,6 +1,7 @@
 package com.playerInterpolation;
 
 import net.runelite.api.Client;
+import net.runelite.api.Model;
 import net.runelite.api.Player;
 import net.runelite.api.RuneLiteObject;
 import net.runelite.api.coords.LocalPoint;
@@ -13,19 +14,19 @@ class PlayerInterpolationOverlay extends Overlay
     private Client client;
     private PlayerInterpolationPlugin plugin;
     private PlayerInterpolationConfig config;
-    private ModelOutlineRenderer renderer;
+
+    RuneLiteObject playerModel;
 
 
     private long lastnano;
     private float delta;
     private float progress;
 
-    PlayerInterpolationOverlay(Client client, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config, ModelOutlineRenderer renderer)
+    PlayerInterpolationOverlay(Client client, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config)
     {
         this.client = client;
         this.plugin = plugin;
         this.config = config;
-        this.renderer = renderer;
 
         lastnano = System.nanoTime();
         delta = 0;
@@ -40,16 +41,28 @@ class PlayerInterpolationOverlay extends Overlay
 
         if (plugin.isMoving())
         {
+            if (playerModel == null)
+            {
+                playerModel = client.createRuneLiteObject();
+            }
+
             Player actor = client.getLocalPlayer();
-
-            RuneLiteObject outlineObject = client.createRuneLiteObject();
-            outlineObject.setModel(actor.getModel());
-
             LocalPoint pos = plugin.getPosition(progress);
-            outlineObject.setLocation(pos, actor.getWorldView().getPlane());
 
-            outlineObject.setOrientation(actor.getCurrentOrientation());
-            renderer.drawOutline(outlineObject, 1, new Color(0, 0, 0, 255), 1);
+            Model tempModel = client.getLocalPlayer().getModel();
+            Model model = client.mergeModels(tempModel);
+            playerModel.setModel(model);
+
+            playerModel.setLocation(pos, actor.getWorldView().getPlane());
+            playerModel.setOrientation(actor.getCurrentOrientation());
+
+            if (!playerModel.isActive())
+                playerModel.setActive(true);
+        }
+        else
+        {
+            if (playerModel != null && playerModel.isActive())
+                playerModel.setActive(false);
         }
 
         return null;
