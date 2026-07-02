@@ -13,13 +13,21 @@ public interface PlayerInterpolationConfig extends Config
 			position = 0,
 			closedByDefault = false
 	)
-	String panelSection = "Interpolation";
+	String interpolationSection = "Interpolation";
+
+	@ConfigSection(
+			name = "Outline",
+			description = "Outline Settings",
+			position = 2,
+			closedByDefault = false
+	)
+	String outlineSection = "Outline";
 
 	@ConfigItem(
 			keyName = "duration",
 			name = "Duration",
 			description = "How long (in milliseconds) it should take to finish the interpolation",
-			section = panelSection
+			section = interpolationSection
 	)
 	default int durationMS()
 	{
@@ -30,7 +38,43 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "rotationTime",
 			name = "Rotation Time",
 			description = "How long (in milliseconds) it should take to rotate",
-			section = panelSection
+			section = interpolationSection
 	)
 	default int rotationMS() { return 200; }
+
+	@ConfigItem(
+			keyName = "useOutline",
+			name = "Use Outline",
+			description = "Instead of moving the player model, keep the original position and show an interpolated outline",
+			section = outlineSection
+	)
+	default boolean useOutline() { return false; }
+
+	@Alpha
+	@ConfigItem(
+			keyName = "outlineColour",
+			name = "Outline Color",
+			description = "Color of the outline",
+			section = outlineSection
+	)
+	default Color outlineColour()
+	{
+		return new Color(0, 0, 0, 175);
+	}
+
+	@ConfigItem(
+			keyName = "outlineWidth",
+			name = "Outline Width",
+			description = "How wide (in pixels) should the outline be",
+			section = outlineSection
+	)
+	default int outlineWidth() { return 2; }
+
+	@ConfigItem(
+			keyName = "outlineFeather",
+			name = "Outline Feather",
+			description = "How much fade should the outline have",
+			section = outlineSection
+	)
+	default int outlineFeather() { return 2; }
 }

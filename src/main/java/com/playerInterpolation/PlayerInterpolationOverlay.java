@@ -14,20 +14,21 @@ class PlayerInterpolationOverlay extends Overlay
     private Client client;
     private PlayerInterpolationPlugin plugin;
     private PlayerInterpolationConfig config;
+    private ModelOutlineRenderer outlineRenderer;
 
     RuneLiteObject playerModel;
-
 
     private long lastnano;
     private float delta;
     private float posProgress;
     private float rotProgress;
 
-    PlayerInterpolationOverlay(Client client, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config)
+    PlayerInterpolationOverlay(Client client, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config, ModelOutlineRenderer outlineRenderer)
     {
         this.client = client;
         this.plugin = plugin;
         this.config = config;
+        this.outlineRenderer = outlineRenderer;
 
         lastnano = System.nanoTime();
         delta = 0;
@@ -59,10 +60,20 @@ class PlayerInterpolationOverlay extends Overlay
             playerModel.setLocation(pos, actor.getWorldView().getPlane());
             playerModel.setOrientation(rot);
 
-            if (!playerModel.isActive())
+            if (!playerModel.isActive() && !config.useOutline())
             {
                 playerModel.setActive(true);
                 plugin.setPlayerVisibility(false);
+            }
+
+            if (config.useOutline())
+            {
+                if (playerModel.isActive())
+                {
+                    playerModel.setActive(false);
+                    plugin.setPlayerVisibility(true);
+                }
+                outlineRenderer.drawOutline(playerModel, config.outlineWidth(), config.outlineColour(), config.outlineFeather());
             }
         }
         else
@@ -85,7 +96,6 @@ class PlayerInterpolationOverlay extends Overlay
 
     public int getRotation()
     {
-        System.out.println("Getting: " + playerModel.getOrientation());
         return playerModel.getOrientation();
     }
 

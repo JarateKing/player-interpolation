@@ -40,6 +40,9 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	@Inject
 	private OverlayManager overlayManager;
 
+	@Inject
+	private ModelOutlineRenderer outlineRenderer;
+
 	private PlayerInterpolationOverlay playerInterpolationOverlay;
 
 	private LocalPoint previousTrueTile = null;
@@ -50,7 +53,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	@Override
 	protected void startUp() throws Exception
 	{
-		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, this, config);
+		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, this, config, outlineRenderer);
 		overlayManager.add(playerInterpolationOverlay);
 
 		renderCallbackManager.register(this);
