@@ -44,6 +44,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 
 	private LocalPoint previousTrueTile = null;
 	private LocalPoint currentTrueTile = null;
+	private boolean isDefaultVisible = true;
 
 	@Override
 	protected void startUp() throws Exception
@@ -92,7 +93,12 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		if (object.getId() != localPlayer.getId())
 			return true;
 
-		return !isMoving();
+		return isDefaultVisible;
+	}
+
+	public void setPlayerVisibility(boolean isVisible)
+	{
+		isDefaultVisible = isVisible;
 	}
 
 	private LocalPoint getTrueTile()

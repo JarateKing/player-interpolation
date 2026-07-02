@@ -49,20 +49,25 @@ class PlayerInterpolationOverlay extends Overlay
             Player actor = client.getLocalPlayer();
             LocalPoint pos = plugin.getPosition(progress);
 
-            Model tempModel = client.getLocalPlayer().getModel();
-            Model model = client.mergeModels(tempModel);
+            Model model = client.mergeModels(client.getLocalPlayer().getModel());
             playerModel.setModel(model);
 
             playerModel.setLocation(pos, actor.getWorldView().getPlane());
             playerModel.setOrientation(actor.getCurrentOrientation());
 
             if (!playerModel.isActive())
+            {
                 playerModel.setActive(true);
+                plugin.setPlayerVisibility(false);
+            }
         }
         else
         {
             if (playerModel != null && playerModel.isActive())
+            {
                 playerModel.setActive(false);
+                plugin.setPlayerVisibility(true);
+            }
         }
 
         return null;
