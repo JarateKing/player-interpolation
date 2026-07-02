@@ -167,6 +167,9 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		int dx = currentTrueTile.getX() - previousTrueTile.getX();
 		int dy = currentTrueTile.getY() - previousTrueTile.getY();
 
+		if (dx == 0 && dy == 0)
+			return previousRotation;
+
 		int targetRotation = 0;
 
 		if (dx == 0 && dy < 0)
