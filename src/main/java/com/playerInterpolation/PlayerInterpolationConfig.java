@@ -27,7 +27,8 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "duration",
 			name = "Duration",
 			description = "How long (in milliseconds) it should take to finish the interpolation",
-			section = interpolationSection
+			section = interpolationSection,
+			position = 0
 	)
 	default int durationMS()
 	{
@@ -38,7 +39,8 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "rawRotation",
 			name = "Raw Rotation",
 			description = "Instead of overriding with interpolating rotation, use default rotation",
-			section = interpolationSection
+			section = interpolationSection,
+			position = 4
 	)
 	default boolean rawRotation() { return false; }
 
@@ -46,7 +48,8 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "rotationTime",
 			name = "Rotation Time",
 			description = "How long (in milliseconds) it should take to rotate",
-			section = interpolationSection
+			section = interpolationSection,
+			position = 1
 	)
 	default int rotationMS() { return 600; }
 
@@ -54,7 +57,8 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "useSteering",
 			name = "Use Steering",
 			description = "Make rotation faster for short rotations and longer for large rotations, instead of taking the same amount of time regardless. Should feel more consistent.",
-			section = interpolationSection
+			section = interpolationSection,
+			position = 2
 	)
 	default boolean useSteering() { return true; }
 
@@ -62,7 +66,8 @@ public interface PlayerInterpolationConfig extends Config
 			keyName = "steeringRate",
 			name = "Steering Rate",
 			description = "How many degrees per second to rotate when using steering",
-			section = interpolationSection
+			section = interpolationSection,
+			position = 3
 	)
 	default int steeringRate() { return 360; }
 
