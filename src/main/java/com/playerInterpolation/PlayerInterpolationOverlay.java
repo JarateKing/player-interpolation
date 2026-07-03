@@ -73,6 +73,9 @@ class PlayerInterpolationOverlay extends Overlay
             playerModel.setLocation(pos, actor.getWorldView().getPlane());
             playerModel.setOrientation(rot);
 
+            int z = Perspective.getFootprintTileHeight(client, pos, actor.getWorldView().getPlane(), actor.getFootprintSize()) - actor.getAnimationHeightOffset();
+            playerModel.setZ(z);
+
             if (!playerModel.isActive() && !config.useOutline())
             {
                 playerModel.setActive(true);
