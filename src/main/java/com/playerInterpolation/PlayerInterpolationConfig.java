@@ -80,6 +80,15 @@ public interface PlayerInterpolationConfig extends Config
 	)
 	default boolean useOutline() { return false; }
 
+	@ConfigItem(
+			keyName = "alwaysShowOutline",
+			name = "Always Show Outline",
+			description = "Keep showing the outline even when not moving",
+			section = outlineSection,
+			position = 1
+	)
+	default boolean alwaysShowOutline() { return false; }
+
 	@Alpha
 	@ConfigItem(
 			keyName = "outlineColour",

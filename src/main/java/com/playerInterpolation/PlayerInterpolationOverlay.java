@@ -1,9 +1,6 @@
 package com.playerInterpolation;
 
-import net.runelite.api.Client;
-import net.runelite.api.Model;
-import net.runelite.api.Player;
-import net.runelite.api.RuneLiteObject;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.ui.overlay.Overlay;
@@ -51,7 +48,7 @@ class PlayerInterpolationOverlay extends Overlay
         rotProgress += delta * (1000f / config.rotationMS());
         rawTime += delta;
 
-        if (plugin.isMoving() || wasMoving)
+        if (plugin.isMoving() || wasMoving || (config.useOutline() && config.alwaysShowOutline()))
         {
             wasMoving = plugin.isMoving();
 
