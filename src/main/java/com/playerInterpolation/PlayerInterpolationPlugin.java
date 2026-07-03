@@ -9,6 +9,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.callback.Hooks;
 import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
@@ -27,7 +28,7 @@ import java.awt.*;
 @PluginDescriptor(
 	name = "Player Interpolation"
 )
-public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
+public class PlayerInterpolationPlugin extends Plugin
 {
 	@Inject
 	private Client client;
@@ -39,7 +40,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	private PlayerInterpolationConfig config;
 
 	@Inject
-	private RenderCallbackManager renderCallbackManager;
+	private Hooks hooks;
 
 	@Inject
 	private OverlayManager overlayManager;
@@ -54,13 +55,15 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	private boolean isDefaultVisible;
 	private int previousRotation;
 
+	private final Hooks.RenderableDrawListener drawListener = this::drawObject;
+
 	@Override
 	protected void startUp() throws Exception
 	{
 		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, clientThread, this, config, outlineRenderer);
 		overlayManager.add(playerInterpolationOverlay);
 
-		renderCallbackManager.register(this);
+		hooks.registerRenderableDrawListener(drawListener);
 
 		previousTrueTile = null;
 		currentTrueTile = null;
@@ -73,7 +76,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 	{
 		playerInterpolationOverlay.shutdown();
 		overlayManager.remove(playerInterpolationOverlay);
-		renderCallbackManager.unregister(this);
+		hooks.unregisterRenderableDrawListener(drawListener);
 	}
 
 	@Subscribe
@@ -96,8 +99,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		}
 	}
 
-	@Override
-	public boolean drawObject(Scene scene, TileObject object)
+	public boolean drawObject(Renderable renderable, boolean drawingUi)
 	{
 		// hide the local player, if the player is moving
 		Player localPlayer = client.getLocalPlayer();
@@ -105,7 +107,7 @@ public class PlayerInterpolationPlugin extends Plugin implements RenderCallback
 		if (localPlayer == null)
 			return true;
 
-		if (object.getId() != localPlayer.getId())
+		if (renderable != localPlayer)
 			return true;
 
 		return isDefaultVisible;
