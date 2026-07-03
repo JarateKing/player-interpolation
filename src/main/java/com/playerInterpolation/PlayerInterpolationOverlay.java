@@ -24,6 +24,7 @@ class PlayerInterpolationOverlay extends Overlay
     private float delta;
     private float posProgress;
     private float rotProgress;
+    private float rawTime;
 
     PlayerInterpolationOverlay(Client client, ClientThread clientThread, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config, ModelOutlineRenderer outlineRenderer)
     {
@@ -37,6 +38,7 @@ class PlayerInterpolationOverlay extends Overlay
         delta = 0;
         posProgress = 0;
         rotProgress = 0;
+        rawTime = 0;
     }
 
     @Override
@@ -45,6 +47,7 @@ class PlayerInterpolationOverlay extends Overlay
         updateDelta();
         posProgress += delta * (1000f / config.durationMS());
         rotProgress += delta * (1000f / config.rotationMS());
+        rawTime += delta;
 
         if (plugin.isMoving())
         {
@@ -57,7 +60,7 @@ class PlayerInterpolationOverlay extends Overlay
             Player actor = client.getLocalPlayer();
             LocalPoint pos = plugin.getPosition(posProgress);
 
-            int rot = plugin.getRotation(rotProgress);
+            int rot = plugin.getRotation(rotProgress, rawTime);
             if (config.rawRotation())
             {
                 rot = actor.getCurrentOrientation();
@@ -101,6 +104,7 @@ class PlayerInterpolationOverlay extends Overlay
     {
         posProgress = 0;
         rotProgress = 0;
+        rawTime = 0;
     }
 
     public void shutdown()

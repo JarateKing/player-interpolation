@@ -170,7 +170,7 @@ public class PlayerInterpolationPlugin extends Plugin
 		return previousTrueTile.plus(Math.round(x), Math.round(y));
 	}
 
-	public int getRotation(float percent)
+	public int getRotation(float percent, float rawTime)
 	{
 		if (previousTrueTile == null)
 		{
@@ -218,6 +218,26 @@ public class PlayerInterpolationPlugin extends Plugin
 				end += 2048;
 			}
 		}
+
+		if (config.useSteering())
+		{
+			float ans = start;
+			if (start > end)
+			{
+				ans -= config.steeringRate() * (2048f / 360f) * rawTime;
+				if (ans <= end)
+					ans = end;
+			}
+			else
+			{
+				ans += config.steeringRate() * (2048f / 360f) * rawTime;
+				if (ans >= end)
+					ans = end;
+			}
+
+			return Math.round(ans) % 2048;
+		}
+
 		float ans = lerp(start, end, t);
 		return Math.round(ans) % 2048;
 	}

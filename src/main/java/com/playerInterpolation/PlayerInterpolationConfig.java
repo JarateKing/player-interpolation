@@ -51,6 +51,22 @@ public interface PlayerInterpolationConfig extends Config
 	default int rotationMS() { return 600; }
 
 	@ConfigItem(
+			keyName = "useSteering",
+			name = "Use Steering",
+			description = "Make rotation faster for short rotations and longer for large rotations, instead of taking the same amount of time regardless. Should feel more consistent.",
+			section = interpolationSection
+	)
+	default boolean useSteering() { return true; }
+
+	@ConfigItem(
+			keyName = "steeringRate",
+			name = "Steering Rate",
+			description = "How many degrees per second to rotate when using steering",
+			section = interpolationSection
+	)
+	default int steeringRate() { return 360; }
+
+	@ConfigItem(
 			keyName = "useOutline",
 			name = "Use Outline",
 			description = "Instead of moving the player model, keep the original position and show an interpolated outline",
