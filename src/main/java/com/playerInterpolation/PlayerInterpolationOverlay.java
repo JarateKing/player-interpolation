@@ -87,8 +87,8 @@ class PlayerInterpolationOverlay extends Overlay
                 if (playerModel.isActive())
                 {
                     playerModel.setActive(false);
-                    plugin.setPlayerVisibility(true);
                 }
+                plugin.setPlayerVisibility(true);
                 outlineRenderer.drawOutline(playerModel, config.outlineWidth(), config.outlineColour(), config.outlineFeather());
             }
         }
