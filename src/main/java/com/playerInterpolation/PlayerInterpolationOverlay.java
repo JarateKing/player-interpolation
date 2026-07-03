@@ -56,9 +56,14 @@ class PlayerInterpolationOverlay extends Overlay
 
             Player actor = client.getLocalPlayer();
             LocalPoint pos = plugin.getPosition(posProgress);
-            int rot = plugin.getRotation(rotProgress);
 
-            Model model = client.mergeModels(client.getLocalPlayer().getModel());
+            int rot = plugin.getRotation(rotProgress);
+            if (config.rawRotation())
+            {
+                rot = actor.getCurrentOrientation();
+            }
+
+            Model model = client.mergeModels(actor.getModel());
             playerModel.setModel(model);
 
             playerModel.setLocation(pos, actor.getWorldView().getPlane());

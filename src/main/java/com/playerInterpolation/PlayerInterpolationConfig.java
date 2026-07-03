@@ -35,6 +35,14 @@ public interface PlayerInterpolationConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "rawRotation",
+			name = "Raw Rotation",
+			description = "Instead of overriding with interpolating rotation, use default rotation",
+			section = interpolationSection
+	)
+	default boolean rawRotation() { return false; }
+
+	@ConfigItem(
 			keyName = "rotationTime",
 			name = "Rotation Time",
 			description = "How long (in milliseconds) it should take to rotate",
