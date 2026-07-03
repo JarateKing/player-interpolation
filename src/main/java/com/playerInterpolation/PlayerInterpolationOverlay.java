@@ -48,10 +48,11 @@ class PlayerInterpolationOverlay extends Overlay
 
         if (plugin.isMoving())
         {
-            if (playerModel == null)
+            if (playerModel != null)
             {
-                playerModel = client.createRuneLiteObject();
+                playerModel.setActive(false);
             }
+            playerModel = client.createRuneLiteObject();
 
             Player actor = client.getLocalPlayer();
             LocalPoint pos = plugin.getPosition(posProgress);
@@ -108,6 +109,10 @@ class PlayerInterpolationOverlay extends Overlay
 
     public int getRotation()
     {
+        if (playerModel == null) {
+            return 0;
+        }
+
         return playerModel.getOrientation();
     }
 
