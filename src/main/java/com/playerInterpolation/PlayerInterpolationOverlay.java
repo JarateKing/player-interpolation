@@ -25,6 +25,7 @@ class PlayerInterpolationOverlay extends Overlay
     private float posProgress;
     private float rotProgress;
     private float rawTime;
+    private boolean wasMoving;
 
     PlayerInterpolationOverlay(Client client, ClientThread clientThread, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config, ModelOutlineRenderer outlineRenderer)
     {
@@ -39,6 +40,7 @@ class PlayerInterpolationOverlay extends Overlay
         posProgress = 0;
         rotProgress = 0;
         rawTime = 0;
+        wasMoving = false;
     }
 
     @Override
@@ -49,8 +51,10 @@ class PlayerInterpolationOverlay extends Overlay
         rotProgress += delta * (1000f / config.rotationMS());
         rawTime += delta;
 
-        if (plugin.isMoving())
+        if (plugin.isMoving() || wasMoving)
         {
+            wasMoving = plugin.isMoving();
+
             if (playerModel != null)
             {
                 playerModel.setActive(false);
