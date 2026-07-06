@@ -171,7 +171,24 @@ class PlayerInterpolationOverlay extends Overlay
 
     private void drawHealthbar(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
     {
-        // todo
+        int ratio = actor.getHealthRatio();
+        int scale = actor.getHealthScale();
+
+        if (scale <= -1 || scale <= 0)
+            return;
+
+        int width = 30;
+        int height = 5;
+        int fill = (int) (((float) ratio / scale) * width);
+
+        Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
+        pos = new Point(pos.getX() - width / 2, pos.getY() - height / 2);
+
+        graphics.setColor(new Color(255, 0, 0, 255));
+        graphics.fillRect(pos.getX(), pos.getY(), width, height);
+
+        graphics.setColor(new Color(0, 255, 0, 255));
+        graphics.fillRect(pos.getX(), pos.getY(), fill, height);
     }
 
     private void drawSkull(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
