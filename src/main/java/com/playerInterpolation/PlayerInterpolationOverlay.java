@@ -1,10 +1,14 @@
 package com.playerInterpolation;
 
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.overlay.Overlay;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 class PlayerInterpolationOverlay extends Overlay
@@ -14,6 +18,7 @@ class PlayerInterpolationOverlay extends Overlay
     private PlayerInterpolationPlugin plugin;
     private PlayerInterpolationConfig config;
     private ModelOutlineRenderer outlineRenderer;
+    private SpriteManager spriteManager;
 
     RuneLiteObject playerModel;
 
@@ -24,13 +29,14 @@ class PlayerInterpolationOverlay extends Overlay
     private float rawTime;
     private boolean wasMoving;
 
-    PlayerInterpolationOverlay(Client client, ClientThread clientThread, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config, ModelOutlineRenderer outlineRenderer)
+    PlayerInterpolationOverlay(Client client, ClientThread clientThread, PlayerInterpolationPlugin plugin, PlayerInterpolationConfig config, ModelOutlineRenderer outlineRenderer, SpriteManager spriteManager)
     {
         this.client = client;
         this.clientThread = clientThread;
         this.plugin = plugin;
         this.config = config;
         this.outlineRenderer = outlineRenderer;
+        this.spriteManager = spriteManager;
 
         lastnano = System.nanoTime();
         delta = 0;
@@ -80,6 +86,12 @@ class PlayerInterpolationOverlay extends Overlay
             {
                 playerModel.setActive(true);
                 plugin.setPlayerVisibility(false);
+
+                drawOverheadPrayer(actor, playerModel, graphics);
+                drawHealthbar(actor, playerModel, graphics);
+                drawSkull(actor, playerModel, graphics);
+                drawText(actor, playerModel, graphics);
+                drawHitsplats(actor, playerModel, graphics);
             }
 
             if (config.useOutline())
@@ -134,5 +146,51 @@ class PlayerInterpolationOverlay extends Overlay
         long nano = System.nanoTime();
         delta = (nano - lastnano) / 1000000000f;
         lastnano = nano;
+    }
+
+    private void drawOverheadPrayer(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    {
+        HeadIcon icon = actor.getOverheadIcon();
+
+        if (icon == null)
+            return;
+
+        int id = getOverheadId(icon);
+        if (id == -1)
+            return;
+
+        BufferedImage image = spriteManager.getSprite(440, id);
+        if (image == null)
+            return;
+
+        Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
+        pos = new Point(pos.getX() - image.getWidth() / 2 - 5, pos.getY() - image.getHeight() / 2 - 64);
+
+        graphics.drawImage(image, pos.getX(), pos.getY(), null);
+    }
+
+    private void drawHealthbar(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    {
+        // todo
+    }
+
+    private void drawSkull(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    {
+        // todo
+    }
+
+    private void drawText(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    {
+        // todo
+    }
+
+    private void drawHitsplats(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    {
+        // todo
+    }
+
+    private int getOverheadId(HeadIcon icon)
+    {
+        return icon.ordinal();
     }
 }

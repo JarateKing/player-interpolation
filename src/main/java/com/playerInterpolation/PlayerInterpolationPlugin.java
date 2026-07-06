@@ -14,6 +14,7 @@ import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.SpriteManager;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -48,6 +49,9 @@ public class PlayerInterpolationPlugin extends Plugin
 	@Inject
 	private ModelOutlineRenderer outlineRenderer;
 
+	@Inject
+	private SpriteManager spriteManager;
+
 	private PlayerInterpolationOverlay playerInterpolationOverlay;
 
 	private LocalPoint previousTrueTile;
@@ -60,7 +64,7 @@ public class PlayerInterpolationPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, clientThread, this, config, outlineRenderer);
+		playerInterpolationOverlay = new PlayerInterpolationOverlay(client, clientThread, this, config, outlineRenderer, spriteManager);
 		overlayManager.add(playerInterpolationOverlay);
 
 		hooks.registerRenderableDrawListener(drawListener);
