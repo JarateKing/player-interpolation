@@ -5,10 +5,12 @@ import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.SpriteManager;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 class PlayerInterpolationOverlay extends Overlay
@@ -198,7 +200,20 @@ class PlayerInterpolationOverlay extends Overlay
 
     private void drawText(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
     {
-        // todo
+        String text = actor.getOverheadText();
+        if (text == null || text.isEmpty())
+            return;
+
+        graphics.setFont(FontManager.getRunescapeFont().deriveFont(Font.BOLD));
+        FontMetrics fontMetrics = graphics.getFontMetrics();
+
+        int width = fontMetrics.stringWidth(text);
+        int height = fontMetrics.getHeight();
+
+        Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
+        pos = new Point(pos.getX() - width / 2 - 1, pos.getY() - height / 2 - 6);
+
+        OverlayUtil.renderTextLocation(graphics, pos, text, Color.YELLOW);
     }
 
     private void drawHitsplats(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
