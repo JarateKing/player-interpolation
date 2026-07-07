@@ -195,7 +195,19 @@ class PlayerInterpolationOverlay extends Overlay
 
     private void drawSkull(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
     {
-        // todo
+        int id = actor.getSkullIcon();
+
+        if (id == -1)
+            return;
+
+        BufferedImage image = spriteManager.getSprite(439, id);
+        if (image == null)
+            return;
+
+        Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
+        pos = new Point(pos.getX() - image.getWidth() / 2 - 5, pos.getY() - image.getHeight() / 2 - 64);
+
+        graphics.drawImage(image, pos.getX(), pos.getY(), null);
     }
 
     private void drawText(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
