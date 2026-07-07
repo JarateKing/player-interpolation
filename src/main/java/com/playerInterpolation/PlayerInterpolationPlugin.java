@@ -2,12 +2,17 @@ package com.playerInterpolation;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.HitsplatApplied;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.Hooks;
 import net.runelite.client.callback.RenderCallback;
@@ -24,6 +29,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 @Slf4j
 @PluginDescriptor(
@@ -58,8 +64,24 @@ public class PlayerInterpolationPlugin extends Plugin
 	private LocalPoint currentTrueTile;
 	private boolean isDefaultVisible;
 	private int previousRotation;
+	private ArrayList<HitsplatObj> hitsplats;
 
 	private final Hooks.RenderableDrawListener drawListener = this::drawObject;
+
+	@Getter
+	public static class HitsplatObj
+	{
+		public int amount;
+		public int type;
+		public int despawn;
+
+		HitsplatObj(int amount, int type, int despawn)
+		{
+			this.amount = amount;
+			this.type = type;
+			this.despawn = despawn;
+		}
+	}
 
 	@Override
 	protected void startUp() throws Exception
@@ -73,6 +95,7 @@ public class PlayerInterpolationPlugin extends Plugin
 		currentTrueTile = null;
 		isDefaultVisible = true;
 		previousRotation = 0;
+		hitsplats = new ArrayList<>();
 	}
 
 	@Override
@@ -101,6 +124,26 @@ public class PlayerInterpolationPlugin extends Plugin
 			previousTrueTile = getTrueTile();
 			currentTrueTile = getTrueTile();
 		}
+	}
+
+	@Subscribe
+	public void onHitsplatApplied(HitsplatApplied event)
+	{
+		if (event.getActor() != client.getLocalPlayer())
+			return;
+
+		int dmg = event.getHitsplat().getAmount();
+		int type = event.getHitsplat().getHitsplatType();
+		int delay = event.getHitsplat().getDisappearsOnGameCycle();
+
+		pruneOldHitsplats();
+		hitsplats.add(new HitsplatObj(dmg, type, delay));
+	}
+
+	public ArrayList<HitsplatObj> getHitsplats()
+	{
+		pruneOldHitsplats();
+		return hitsplats;
 	}
 
 	public boolean drawObject(Renderable renderable, boolean drawingUi)
@@ -258,6 +301,11 @@ public class PlayerInterpolationPlugin extends Plugin
 		if (v < l)
 			return l;
 		return v;
+	}
+
+	private void pruneOldHitsplats()
+	{
+		hitsplats.removeIf(x -> x.despawn >= client.getGameCycle());
 	}
 
 	@Provides

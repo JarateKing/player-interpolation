@@ -230,7 +230,7 @@ class PlayerInterpolationOverlay extends Overlay
 
     private void drawHitsplats(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
     {
-        // todo
+        System.out.println(plugin.getHitsplats());
     }
 
     private int getOverheadId(HeadIcon icon)
