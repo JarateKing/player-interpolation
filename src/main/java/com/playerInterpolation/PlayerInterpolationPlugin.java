@@ -305,7 +305,7 @@ public class PlayerInterpolationPlugin extends Plugin
 
 	private void pruneOldHitsplats()
 	{
-		hitsplats.removeIf(x -> x.despawn >= client.getGameCycle());
+		hitsplats.removeIf(x -> x.despawn <= client.getGameCycle());
 	}
 
 	@Provides
