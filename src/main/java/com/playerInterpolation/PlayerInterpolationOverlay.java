@@ -233,6 +233,12 @@ class PlayerInterpolationOverlay extends Overlay
     private void drawHitsplats(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
     {
         var hitsplats = plugin.getHitsplats();
+        hitsplats.sort((a, b) -> {
+            int ap = 1000 * (a.despawn - client.getGameCycle()) + a.amount;
+            int bp = 1000 * (b.despawn - client.getGameCycle()) + b.amount;
+
+            return ap - bp;
+        });
 
         // draw most important last
         for (int i = Math.min(3, hitsplats.size() - 1); i >= 0; i--)
@@ -253,9 +259,14 @@ class PlayerInterpolationOverlay extends Overlay
                 int textWidth = metrics.stringWidth(damage);
                 int textHeight = metrics.getHeight();
 
-                // todo: handle offsets with multiple hitsplats
-                int x = pos.getX();
-                int y = pos.getY();
+                // https://github.com/Thource/rl-nameplates-and-hitsplats/blob/main/src/main/java/dev/thource/runelite/nameplates/themes/hitsplats/OSRSDisplayType.java#L30-L35
+                int xd = image.getWidth() / 2 + 4;
+                int yd = image.getHeight() / 2 - 2;
+                int xm = i == 2 ? -1 : i == 3 ? 1 : 0;
+                int ym = i == 0 ? 1 : i == 1 ? -1 : 0;
+
+                int x = pos.getX() + xm * xd;
+                int y = pos.getY() + (int)((ym - 0.6f) * yd);
                 int ix = x + textWidth / 2 - image.getWidth() / 2;
                 int iy = y - textHeight + (textHeight - image.getHeight()) / 2;
 
