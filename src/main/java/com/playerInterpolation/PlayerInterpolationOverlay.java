@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
+import static net.runelite.api.HitsplatID.*;
+
 class PlayerInterpolationOverlay extends Overlay
 {
     private Client client;
@@ -230,11 +232,74 @@ class PlayerInterpolationOverlay extends Overlay
 
     private void drawHitsplats(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
     {
-        System.out.println(plugin.getHitsplats());
+        var hitsplats = plugin.getHitsplats();
+
+        // draw most important last
+        for (int i = Math.min(3, hitsplats.size() - 1); i >= 0; i--)
+        {
+            var current = hitsplats.get(i);
+
+            if (current == null)
+                continue;
+
+            String damage = Integer.toString(current.amount);
+            var image = getHitsplatImage(current.type);
+
+            Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() / 2);
+
+            if (pos != null && image != null)
+            {
+                FontMetrics metrics = graphics.getFontMetrics();
+                int textWidth = metrics.stringWidth(damage);
+                int textHeight = metrics.getHeight();
+
+                // todo: handle offsets with multiple hitsplats
+
+                graphics.drawImage(image, pos.getX(), pos.getY(), null);
+
+                graphics.setColor(Color.black);
+                graphics.drawString(damage, pos.getX() + 1, pos.getY() + 1);
+
+                graphics.setColor(Color.white);
+                graphics.drawString(damage, pos.getX(), pos.getY());
+            }
+        }
     }
 
     private int getOverheadId(HeadIcon icon)
     {
         return icon.ordinal();
+    }
+
+    private BufferedImage getHitsplatImage(int id)
+    {
+        // todo: 1628, 1362, 1363, 1634, other types
+
+        switch (id)
+        {
+            case DAMAGE_ME:
+                return spriteManager.getSprite(1359, 0);
+            case BLOCK_ME:
+                return spriteManager.getSprite(1358, 0);
+            case DAMAGE_OTHER:
+                return spriteManager.getSprite(1631, 0);
+            case BLOCK_OTHER:
+                return spriteManager.getSprite(1630, 0);
+            case DAMAGE_ME_POISE:
+            case POISON:
+                return spriteManager.getSprite(1360, 0);
+            case DISEASE:
+                return spriteManager.getSprite(1633, 0);
+            case VENOM:
+                return spriteManager.getSprite(1632, 0);
+            case DAMAGE_OTHER_POISE:
+                return spriteManager.getSprite(2245, 0);
+            case HEAL:
+                return spriteManager.getSprite(1629, 0);
+
+        }
+
+        // default to damage
+        return spriteManager.getSprite(1359, 0);
     }
 }
