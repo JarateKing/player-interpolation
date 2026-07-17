@@ -254,14 +254,17 @@ class PlayerInterpolationOverlay extends Overlay
                 int textHeight = metrics.getHeight();
 
                 // todo: handle offsets with multiple hitsplats
+                int x = pos.getX();
+                int y = pos.getY();
+                int ix = x + textWidth / 2 - image.getWidth() / 2;
+                int iy = y - textHeight + (textHeight - image.getHeight()) / 2;
 
-                graphics.drawImage(image, pos.getX(), pos.getY(), null);
+                graphics.drawImage(image, ix, iy, null);
 
                 graphics.setColor(Color.black);
-                graphics.drawString(damage, pos.getX() + 1, pos.getY() + 1);
-
+                graphics.drawString(damage, x + 1, y + 1);
                 graphics.setColor(Color.white);
-                graphics.drawString(damage, pos.getX(), pos.getY());
+                graphics.drawString(damage, x, y);
             }
         }
     }
