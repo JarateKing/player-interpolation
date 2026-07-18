@@ -91,10 +91,13 @@ class PlayerInterpolationOverlay extends Overlay
                 playerModel.setActive(true);
                 plugin.setPlayerVisibility(false);
 
-                drawOverheadPrayer(actor, playerModel, graphics);
-                drawHealthbar(actor, playerModel, graphics);
-                drawSkull(actor, playerModel, graphics);
-                drawText(actor, playerModel, graphics);
+                Point canvasPoint = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
+
+                canvasPoint = drawText(actor, playerModel, graphics, canvasPoint);
+                canvasPoint = drawHealthbar(actor, playerModel, graphics, canvasPoint);
+                canvasPoint = drawSkull(actor, playerModel, graphics, canvasPoint);
+                canvasPoint = drawOverheadPrayer(actor, playerModel, graphics, canvasPoint);
+
                 drawHitsplats(actor, playerModel, graphics);
             }
 
@@ -152,71 +155,77 @@ class PlayerInterpolationOverlay extends Overlay
         lastnano = nano;
     }
 
-    private void drawOverheadPrayer(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    private Point drawOverheadPrayer(Player actor, RuneLiteObject playerModel, Graphics2D graphics, Point canvasPoint)
     {
         HeadIcon icon = actor.getOverheadIcon();
 
         if (icon == null)
-            return;
+            return canvasPoint;
 
         int id = getOverheadId(icon);
         if (id == -1)
-            return;
+            return canvasPoint;
 
         BufferedImage image = spriteManager.getSprite(440, id);
         if (image == null)
-            return;
+            return canvasPoint;
 
-        Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
-        pos = new Point(pos.getX() - image.getWidth() / 2 - 5, pos.getY() - image.getHeight() / 2 - 64);
+        Point pos = new Point(canvasPoint.getX() - image.getWidth() / 2 - 5, canvasPoint.getY() - image.getHeight() / 2 - 64);
+        canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - image.getHeight());
 
         graphics.drawImage(image, pos.getX(), pos.getY(), null);
+
+        return canvasPoint;
     }
 
-    private void drawHealthbar(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    private Point drawHealthbar(Player actor, RuneLiteObject playerModel, Graphics2D graphics, Point canvasPoint)
     {
         int ratio = actor.getHealthRatio();
         int scale = actor.getHealthScale();
 
         if (scale <= -1 || scale <= 0)
-            return;
+            return canvasPoint;
 
         int width = 30;
         int height = 5;
         int fill = (int) (((float) ratio / scale) * width);
 
-        Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
-        pos = new Point(pos.getX() - width / 2, pos.getY() - height / 2);
+        Point pos = new Point(canvasPoint.getX() - width / 2, canvasPoint.getY() - height / 2);
+        canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - 4);
 
         graphics.setColor(new Color(255, 0, 0, 255));
         graphics.fillRect(pos.getX(), pos.getY(), width, height);
 
         graphics.setColor(new Color(0, 255, 0, 255));
         graphics.fillRect(pos.getX(), pos.getY(), fill, height);
+
+        return canvasPoint;
     }
 
-    private void drawSkull(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    private Point drawSkull(Player actor, RuneLiteObject playerModel, Graphics2D graphics, Point canvasPoint)
     {
         int id = actor.getSkullIcon();
 
         if (id == -1)
-            return;
+            return canvasPoint;
 
         BufferedImage image = spriteManager.getSprite(439, id);
         if (image == null)
-            return;
+            return canvasPoint;
 
-        Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
-        pos = new Point(pos.getX() - image.getWidth() / 2 - 5, pos.getY() - image.getHeight() / 2 - 64);
+        Point pos = new Point(canvasPoint.getX() - image.getWidth() / 2 - 5, canvasPoint.getY() - image.getHeight() / 2 - 64);
+        canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - image.getHeight());
 
         graphics.drawImage(image, pos.getX(), pos.getY(), null);
+
+        return canvasPoint;
     }
 
-    private void drawText(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
+    private Point drawText(Player actor, RuneLiteObject playerModel, Graphics2D graphics, Point canvasPoint)
     {
         String text = actor.getOverheadText();
         if (text == null || text.isEmpty())
-            return;
+            return canvasPoint;
 
         graphics.setFont(FontManager.getRunescapeFont().deriveFont(Font.BOLD));
         FontMetrics fontMetrics = graphics.getFontMetrics();
@@ -224,10 +233,12 @@ class PlayerInterpolationOverlay extends Overlay
         int width = fontMetrics.stringWidth(text);
         int height = fontMetrics.getHeight();
 
-        Point pos = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
-        pos = new Point(pos.getX() - width / 2 - 1, pos.getY() - height / 2 - 6);
+        Point pos = new Point(canvasPoint.getX() - width / 2 - 1, canvasPoint.getY() - height / 2 - 6);
+        canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - 6);
 
         OverlayUtil.renderTextLocation(graphics, pos, text, Color.YELLOW);
+
+        return canvasPoint;
     }
 
     private void drawHitsplats(Player actor, RuneLiteObject playerModel, Graphics2D graphics)
@@ -239,6 +250,8 @@ class PlayerInterpolationOverlay extends Overlay
 
             return ap - bp;
         });
+
+        graphics.setFont(FontManager.getRunescapeSmallFont());
 
         // draw most important last
         for (int i = Math.min(3, hitsplats.size() - 1); i >= 0; i--)
