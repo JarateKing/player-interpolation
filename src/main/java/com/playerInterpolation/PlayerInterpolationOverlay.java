@@ -194,12 +194,12 @@ class PlayerInterpolationOverlay extends Overlay
         int ratio = actor.getHealthRatio();
         int scale = actor.getHealthScale();
 
-        if (scale <= -1 || scale <= 0)
+        if (ratio <= -1 || scale <= 0)
             return canvasPoint;
 
         int width = 30;
         int height = 5;
-        int fill = (int) (((float) ratio / scale) * width);
+        int fill = (int) (Math.min((float) ratio / scale, 1.0f) * width);
 
         Point pos = new Point(canvasPoint.getX() - width / 2, canvasPoint.getY() - height / 2);
         canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - 4);
