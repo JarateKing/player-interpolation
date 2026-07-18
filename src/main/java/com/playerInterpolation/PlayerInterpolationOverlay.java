@@ -10,6 +10,8 @@ import net.runelite.client.ui.overlay.Overlay;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
@@ -48,6 +50,10 @@ class PlayerInterpolationOverlay extends Overlay
         rotProgress = 0;
         rawTime = 0;
         wasMoving = false;
+
+        setPosition(OverlayPosition.DYNAMIC);
+        setPriority(PRIORITY_HIGH);
+        setLayer(OverlayLayer.ABOVE_SCENE);
     }
 
     @Override
@@ -90,15 +96,6 @@ class PlayerInterpolationOverlay extends Overlay
             {
                 playerModel.setActive(true);
                 plugin.setPlayerVisibility(false);
-
-                Point canvasPoint = Perspective.localToCanvas(client, playerModel.getLocation(), actor.getWorldView().getPlane(), actor.getLogicalHeight() + 20);
-
-                canvasPoint = drawText(actor, playerModel, graphics, canvasPoint);
-                canvasPoint = drawHealthbar(actor, playerModel, graphics, canvasPoint);
-                canvasPoint = drawSkull(actor, playerModel, graphics, canvasPoint);
-                canvasPoint = drawOverheadPrayer(actor, playerModel, graphics, canvasPoint);
-
-                drawHitsplats(actor, playerModel, graphics);
             }
 
             if (config.useOutline())
@@ -109,6 +106,19 @@ class PlayerInterpolationOverlay extends Overlay
                 }
                 plugin.setPlayerVisibility(true);
                 outlineRenderer.drawOutline(playerModel, config.outlineWidth(), config.outlineColour(), config.outlineFeather());
+            }
+
+            if (playerModel.isActive() && !config.useOutline())
+            {
+                int zoffset = Perspective.getFootprintTileHeight(client, pos, actor.getWorldView().getPlane(), actor.getFootprintSize()) - actor.getLogicalHeight();
+                Point canvasPoint = Perspective.localToCanvas(client, pos.getX(), pos.getY(), zoffset);
+
+                canvasPoint = drawText(actor, playerModel, graphics, canvasPoint);
+                canvasPoint = drawHealthbar(actor, playerModel, graphics, canvasPoint);
+                canvasPoint = drawSkull(actor, playerModel, graphics, canvasPoint);
+                canvasPoint = drawOverheadPrayer(actor, playerModel, graphics, canvasPoint);
+
+                drawHitsplats(actor, playerModel, graphics);
             }
         }
         else
@@ -163,6 +173,7 @@ class PlayerInterpolationOverlay extends Overlay
             return canvasPoint;
 
         int id = getOverheadId(icon);
+
         if (id == -1)
             return canvasPoint;
 
@@ -170,7 +181,7 @@ class PlayerInterpolationOverlay extends Overlay
         if (image == null)
             return canvasPoint;
 
-        Point pos = new Point(canvasPoint.getX() - image.getWidth() / 2 - 5, canvasPoint.getY() - image.getHeight() / 2 - 64);
+        Point pos = new Point(canvasPoint.getX() - image.getWidth() / 2, canvasPoint.getY() - image.getHeight());
         canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - image.getHeight());
 
         graphics.drawImage(image, pos.getX(), pos.getY(), null);
@@ -213,7 +224,7 @@ class PlayerInterpolationOverlay extends Overlay
         if (image == null)
             return canvasPoint;
 
-        Point pos = new Point(canvasPoint.getX() - image.getWidth() / 2 - 5, canvasPoint.getY() - image.getHeight() / 2 - 64);
+        Point pos = new Point(canvasPoint.getX() - image.getWidth() / 2, canvasPoint.getY() - image.getHeight());
         canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - image.getHeight());
 
         graphics.drawImage(image, pos.getX(), pos.getY(), null);
@@ -224,6 +235,7 @@ class PlayerInterpolationOverlay extends Overlay
     private Point drawText(Player actor, RuneLiteObject playerModel, Graphics2D graphics, Point canvasPoint)
     {
         String text = actor.getOverheadText();
+
         if (text == null || text.isEmpty())
             return canvasPoint;
 
@@ -233,8 +245,8 @@ class PlayerInterpolationOverlay extends Overlay
         int width = fontMetrics.stringWidth(text);
         int height = fontMetrics.getHeight();
 
-        Point pos = new Point(canvasPoint.getX() - width / 2 - 1, canvasPoint.getY() - height / 2 - 6);
-        canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - 6);
+        Point pos = new Point(canvasPoint.getX() - width / 2 - 1, canvasPoint.getY() - height / 2 + 6);
+        canvasPoint = new Point(canvasPoint.getX(), canvasPoint.getY() - 15);
 
         OverlayUtil.renderTextLocation(graphics, pos, text, Color.YELLOW);
 
