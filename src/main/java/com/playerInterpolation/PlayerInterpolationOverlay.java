@@ -16,6 +16,7 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 import static net.runelite.api.HitsplatID.*;
+import net.runelite.api.gameval.SpriteID;
 
 class PlayerInterpolationOverlay extends Overlay
 {
@@ -312,33 +313,80 @@ class PlayerInterpolationOverlay extends Overlay
 
     private BufferedImage getHitsplatImage(int id)
     {
-        // todo: 1628, 1362, 1363, 1634, other types
-
+        // reference: https://github.com/Thource/rl-nameplates-and-hitsplats/blob/871ecc5e97a2c8261dd8c5432226514c41661da9/src/main/java/dev/thource/runelite/nameplates/themes/hitsplats/HitsplatDefaultSprite.java
         switch (id)
         {
-            case DAMAGE_ME:
-                return spriteManager.getSprite(1359, 0);
             case BLOCK_ME:
-                return spriteManager.getSprite(1358, 0);
-            case DAMAGE_OTHER:
-                return spriteManager.getSprite(1631, 0);
+                return spriteManager.getSprite(SpriteID.Hitmark._0, 0);
             case BLOCK_OTHER:
-                return spriteManager.getSprite(1630, 0);
-            case DAMAGE_ME_POISE:
+                return spriteManager.getSprite(SpriteID.Hitmark._9, 0);
+            case DAMAGE_ME:
+                return spriteManager.getSprite(SpriteID.Hitmark._1, 0);
+            case DAMAGE_OTHER:
+                return spriteManager.getSprite(SpriteID.Hitmark._10, 0);
             case POISON:
-                return spriteManager.getSprite(1360, 0);
+                return spriteManager.getSprite(SpriteID.Hitmark._2, 0);
             case DISEASE:
-                return spriteManager.getSprite(1633, 0);
+                return spriteManager.getSprite(SpriteID.Hitmark._3, 0);
+            case DISEASE_BLOCKED:
+                return spriteManager.getSprite(SpriteID.Hitmark._12, 0);
             case VENOM:
-                return spriteManager.getSprite(1632, 0);
-            case DAMAGE_OTHER_POISE:
-                return spriteManager.getSprite(2245, 0);
+                return spriteManager.getSprite(SpriteID.Hitmark._11, 0);
             case HEAL:
-                return spriteManager.getSprite(1629, 0);
-
+                return spriteManager.getSprite(SpriteID.Hitmark._8, 0);
+            case CYAN_UP:
+                return spriteManager.getSprite(SpriteID.Hitmark._20, 0);
+            case CYAN_DOWN:
+                return spriteManager.getSprite(SpriteID.Hitmark._21, 0);
+            case DAMAGE_ME_CYAN:
+                return spriteManager.getSprite(SpriteID.Hitmark._6, 0);
+            case DAMAGE_OTHER_CYAN:
+                return spriteManager.getSprite(SpriteID.Hitmark._15, 0);
+            case DAMAGE_ME_ORANGE:
+                return spriteManager.getSprite(SpriteID.Hitmark._7, 0);
+            case DAMAGE_OTHER_ORANGE:
+                return spriteManager.getSprite(SpriteID.Hitmark._16, 0);
+            case DAMAGE_ME_YELLOW:
+                return spriteManager.getSprite(SpriteID.Hitmark._4, 0);
+            case DAMAGE_OTHER_YELLOW:
+                return spriteManager.getSprite(SpriteID.Hitmark._13, 0);
+            case DAMAGE_ME_WHITE:
+                return spriteManager.getSprite(SpriteID.Hitmark._5, 0);
+            case DAMAGE_OTHER_WHITE:
+                return spriteManager.getSprite(SpriteID.Hitmark._14, 0);
+            case DAMAGE_MAX_ME:
+                return spriteManager.getSprite(SpriteID.Hitmark._24, 0);
+            case DAMAGE_MAX_ME_CYAN:
+                return spriteManager.getSprite(SpriteID.Hitmark._27, 0);
+            case DAMAGE_MAX_ME_ORANGE:
+                return spriteManager.getSprite(SpriteID.Hitmark._28, 0);
+            case DAMAGE_MAX_ME_YELLOW:
+                return spriteManager.getSprite(SpriteID.Hitmark._25, 0);
+            case DAMAGE_MAX_ME_WHITE:
+                return spriteManager.getSprite(SpriteID.Hitmark._26, 0);
+            case DAMAGE_ME_POISE:
+                return spriteManager.getSprite(SpriteID.Hitmark._29, 0);
+            case DAMAGE_OTHER_POISE:
+                return spriteManager.getSprite(SpriteID.Hitmark._30, 0);
+            case DAMAGE_MAX_ME_POISE:
+                return spriteManager.getSprite(SpriteID.Hitmark._31, 0);
+            case CORRUPTION:
+                return spriteManager.getSprite(SpriteID.Hitmark._17, 0);
+            case PRAYER_DRAIN:
+                return spriteManager.getSprite(SpriteID.Hitmark._32, 0);
+            case BLEED:
+                return spriteManager.getSprite(SpriteID.Hitmark._35, 0);
+            case SANITY_DRAIN:
+                return spriteManager.getSprite(SpriteID.Hitmark._38, 0);
+            case SANITY_RESTORE:
+                return spriteManager.getSprite(SpriteID.Hitmark._39, 0);
+            case DOOM:
+                return spriteManager.getSprite(SpriteID.Hitmark._40, 0);
+            case BURN:
+                return spriteManager.getSprite(SpriteID.Hitmark._41, 0);
         }
 
         // default to damage
-        return spriteManager.getSprite(1359, 0);
+        return spriteManager.getSprite(SpriteID.Hitmark._1, 0);
     }
 }
